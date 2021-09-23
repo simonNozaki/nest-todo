@@ -1,57 +1,26 @@
+import { TasksStatus } from '../type/value.object';
 import { v4 } from 'uuid';
 
-export type TasksStatus = 'UNPROCESSED' | 'IN PROGRESS' | 'DONE' | 'GONE';
-
 /**
- * タスクオブジェクトクラス
- * あとでドメインオブジェクトに
+ * タスクデータモデル
  */
-export class Tasks {
+export interface TasksRecord {
   id: string;
   title: string;
   description: string;
   status: TasksStatus;
   deadline: Date;
-  // TODO こっから下はインフラ用項目なので後で移し替え
-  createdBy: string;
   createdAt: string;
-  updatedBy: string;
+  createdBy: string;
   updatedAt: string;
-
-  /**
-   * ファクトリメソッド
-   * @param {string} title タイトル
-   * @param {string} description 説明
-   * @param {TasksStatus} status ステータス
-   * @param {Date} deadline 期限
-   * @returns Tasks
-   */
-  static of(
-    title: string,
-    description: string,
-    status: TasksStatus,
-    deadline: Date,
-  ): Tasks {
-    const now = new Date();
-    return {
-      id: v4().toString(),
-      title: title,
-      description: description,
-      status: status,
-      deadline: deadline,
-      createdAt: now.toString(),
-      createdBy: '',
-      updatedAt: now.toString(),
-      updatedBy: '',
-    };
-  }
+  updatedBy: string;
 }
 
 /**
  * インメモリのタスク一覧を返す
  * @returns Tasks[]
  */
-export const getBasicTasks = (): Tasks[] => {
+export const getBasicTasks = (): TasksRecord[] => {
   const now = new Date();
   const deadline = addNDate(now, 7);
 

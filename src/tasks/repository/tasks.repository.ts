@@ -1,4 +1,4 @@
-import { Tasks } from '../tasks';
+import { Tasks } from '../model/tasks';
 
 /**
  * タスクリポジトリ

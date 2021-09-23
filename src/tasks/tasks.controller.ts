@@ -1,5 +1,5 @@
 import { Body, Controller, Get, HttpCode, Inject, Post } from '@nestjs/common';
-import { Tasks } from './tasks';
+import { Tasks } from './model/tasks';
 import { TasksRepository } from './repository/tasks.repository';
 import { CaptureTasks } from './dto/create-tasks.interface';
 

@@ -1,4 +1,4 @@
-import { TasksStatus } from '../tasks';
+import { TasksStatus } from '../type/value.object';
 
 /**
  * タスク生成リクエストDTOクラス
