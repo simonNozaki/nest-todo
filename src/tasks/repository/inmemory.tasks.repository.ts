@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Tasks } from '../tasks';
+import { getBasicTasks, Tasks } from '../tasks';
 import { TasksRepository } from './tasks.repository';
 
 /**
@@ -8,6 +8,12 @@ import { TasksRepository } from './tasks.repository';
 @Injectable()
 export class InMemoryTasksReposiory implements TasksRepository {
   findAll(): Tasks[] {
-    return [];
+    return getBasicTasks();
+  }
+
+  capture(tasks: Tasks): Tasks {
+    const basicTasks = getBasicTasks();
+    basicTasks.push(tasks);
+    return tasks;
   }
 }
