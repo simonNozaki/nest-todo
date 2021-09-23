@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { getBasicTasks, TasksRecord } from '../infrastructure/task.record';
+import { getBasicTasks, TasksRecord } from './task.record';
 import { Tasks } from '../model/tasks';
-import { TasksRepository } from './tasks.repository';
+import { TasksRepository } from '../repository/tasks.repository';
 
 /**
  * インメモリタスクリポジトリ実装クラス

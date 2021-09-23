@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { InMemoryTasksReposiory } from './repository/inmemory.tasks.repository';
+import { InMemoryTasksReposiory } from './infrastructure/inmemory.tasks.repository';
 import { TasksController } from './tasks.controller';
 
 @Module({
