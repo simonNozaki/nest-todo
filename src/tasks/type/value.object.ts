@@ -10,9 +10,13 @@ export type TasksStatus = 'UNPROCESSED' | 'IN PROGRESS' | 'DONE' | 'GONE';
  * UUID値オブジェクト
  */
 export class Uuid {
-  private readonly _value: string = v4().toString();
+  constructor(private readonly _value: string) {}
 
-  public get value(): string {
+  static of(): Uuid {
+    return new Uuid(v4().toString());
+  }
+
+  get value(): string {
     return this._value;
   }
 }
@@ -22,12 +26,33 @@ export class Uuid {
  */
 export class Title {
   constructor(private readonly _title: string) {
-    if (_title.length > 200) {
+    if (!this._title) {
+      throw new BadRequestException('e.validation.tasks.title.blank');
+    }
+
+    if (this._title.length > 200 || this._title.length === 0) {
       throw new BadRequestException('e.validation.tasks.title.invalid_length');
     }
   }
 
   public get title(): string {
     return this._title;
+  }
+}
+
+/**
+ * 説明値オブジェクト
+ */
+export class Description {
+  constructor(private readonly _value: string) {
+    if (this._value.length > 500) {
+      throw new BadRequestException(
+        'e.validation.tasks.description.invalid_length',
+      );
+    }
+  }
+
+  get value(): string {
+    return this._value;
   }
 }

@@ -1,18 +1,38 @@
-import { Injectable } from '@nestjs/common';
-import { getBasicTasks, TasksRecord } from './task.record';
+import { Inject, Injectable } from '@nestjs/common';
+import { TasksRecord } from './tasks.record';
 import { Tasks } from '../model/tasks';
 import { TasksRepository } from '../repository/tasks.repository';
+import { TasksMapper } from './tasks.mapper';
+import { Description, Title, Uuid } from '../type/value.object';
 
 /**
  * インメモリタスクリポジトリ実装クラス
  */
 @Injectable()
 export class InMemoryTasksReposiory implements TasksRepository {
+  constructor(
+    @Inject('TasksMapper') private readonly tasksMapper: TasksMapper,
+  ) {}
+
   findAll(): Tasks[] {
-    const tasksRecords = getBasicTasks();
+    const tasksRecords = this.tasksMapper.findAll();
     return tasksRecords.map((t) =>
       Tasks.of(t.title, t.description, t.status, t.deadline),
     );
+  }
+
+  findById(uuid: Uuid): Tasks | null {
+    const recordOrNull = this.tasksMapper.findById(uuid);
+    if (recordOrNull) {
+      return new Tasks(
+        new Uuid(recordOrNull.id),
+        new Title(recordOrNull.title),
+        new Description(recordOrNull.description),
+        recordOrNull.status,
+        recordOrNull.deadline,
+      );
+    }
+    return null;
   }
 
   capture(tasks: Tasks): Tasks {
@@ -20,7 +40,7 @@ export class InMemoryTasksReposiory implements TasksRepository {
     const tasksRecord: TasksRecord = {
       id: tasks.id.value,
       title: tasks.title.title,
-      description: tasks.description,
+      description: tasks.description.value,
       status: tasks.status,
       deadline: tasks.deadline,
       createdAt: now,
@@ -28,7 +48,7 @@ export class InMemoryTasksReposiory implements TasksRepository {
       updatedAt: now,
       updatedBy: '',
     };
-    getBasicTasks().push(tasksRecord);
+    this.tasksMapper.capture(tasksRecord);
 
     return tasks;
   }

@@ -1,15 +1,16 @@
-import { TasksStatus, Title, Uuid } from '../type/value.object';
+import { Description, TasksStatus, Title, Uuid } from '../type/value.object';
 
 /**
  * タスクオブジェクトクラス
- * あとでドメインオブジェクトに
  */
 export class Tasks {
-  id: Uuid;
-  title: Title;
-  description: string;
-  status: TasksStatus;
-  deadline: Date;
+  constructor(
+    readonly id: Uuid,
+    readonly title: Title,
+    readonly description: Description,
+    readonly status: TasksStatus,
+    readonly deadline: Date,
+  ) {}
 
   /**
    * ファクトリメソッド
@@ -25,12 +26,40 @@ export class Tasks {
     status: TasksStatus,
     deadline: Date,
   ): Tasks {
-    return {
-      id: new Uuid(),
-      title: new Title(title),
-      description: description,
-      status: status,
-      deadline: deadline,
-    };
+    return new Tasks(
+      Uuid.of(),
+      new Title(title),
+      new Description(description),
+      status,
+      deadline,
+    );
+  }
+
+  /**
+   * 完了にする
+   * @returns Tasks
+   */
+  makeStatusDone(): Tasks {
+    return new Tasks(
+      this.id,
+      this.title,
+      this.description,
+      'DONE',
+      this.deadline,
+    );
+  }
+
+  /**
+   * タスクを破棄する
+   * @returns Tasks
+   */
+  makeTasksDiscarded(): Tasks {
+    return new Tasks(
+      this.id,
+      this.title,
+      this.description,
+      'GONE',
+      this.deadline,
+    );
   }
 }
