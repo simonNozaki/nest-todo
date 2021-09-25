@@ -2,10 +2,12 @@ import { TasksMapper } from './tasks.mapper';
 import { TasksRecord } from './tasks.record';
 import { v4 } from 'uuid';
 import { Uuid } from '../type/value.object';
+import { Injectable } from '@nestjs/common';
 
 /**
  * インメモリオブジェクトタスクマッパー実装クラス
  */
+@Injectable()
 export class InMemoryTasksMapper implements TasksMapper {
   /**
    * 基準日から任意日数を加算する
