@@ -13,7 +13,7 @@ import { TasksController } from './tasks.controller';
     },
     {
       provide: 'TasksMapper',
-      useClass: LocalMongoDbTasksMapper,
+      useClass: InMemoryTasksMapper,
     },
   ],
 })
