@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { WithId } from 'mongodb';
 import { Uuid } from '../type/value.object';
 import { localMongoClient, selectCollection } from './mongodb-client';
@@ -7,6 +8,7 @@ import { TasksRecord } from './tasks.record';
 /**
  * ローカルMongoDB用マッパー実装クラス
  */
+@Injectable()
 export class LocalMongoDbTasksMapper implements TasksMapper {
   async findAll(): Promise<TasksRecord[]> {
     const collection = await selectCollection<WithId<TasksRecord>>(
