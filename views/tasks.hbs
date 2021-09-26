@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> nest-todo </title>
+    </head>
+    <body>
+        <h1> TODOリスト </h1>
+        {{#each tasks}}
+        <ul>
+            {{#each this}}
+                <li> {{@key}}: {{this}} </li>
+            {{/each}}
+        </ul>
+        {{/each}} 
+    </body>
+</html>

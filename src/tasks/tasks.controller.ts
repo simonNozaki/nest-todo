@@ -1,4 +1,12 @@
-import { Body, Controller, Get, HttpCode, Inject, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Inject,
+  Post,
+  Render,
+} from '@nestjs/common';
 import { Tasks } from './model/tasks';
 import { TasksRepository } from './repository/tasks.repository';
 import { CaptureTasks } from './dto/create-tasks.interface';
@@ -22,6 +30,7 @@ export class TasksController {
    * @returns タスク
    */
   @Get()
+  @Render('tasks')
   async findAll(): Promise<FindAllTasks> {
     const tasks: Tasks[] = await this.tasksRepository.findAll();
     const responseElements: FindAllTasksElement[] = tasks.map((t) => {
