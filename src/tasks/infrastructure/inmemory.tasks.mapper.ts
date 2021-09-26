@@ -70,19 +70,26 @@ export class InMemoryTasksMapper implements TasksMapper {
     },
   ];
 
-  findAll(): TasksRecord[] {
-    return this.taskRecords;
+  async findAll(): Promise<TasksRecord[]> {
+    return new Promise((resolve) => {
+      resolve(this.taskRecords);
+    });
   }
 
-  findById(uuid: Uuid): TasksRecord | null {
-    const recordOrNull = this.taskRecords.find((r) => r.id === uuid.value);
-    if (recordOrNull) {
-      return recordOrNull;
-    }
-    return null;
+  findById(uuid: Uuid): Promise<TasksRecord | null> {
+    return new Promise((resolve) => {
+      const recordOrNull = this.taskRecords.find((r) => r.id === uuid.value);
+      if (recordOrNull) {
+        resolve(recordOrNull);
+      }
+      resolve(null);
+    });
   }
 
-  capture(taskRecord: TasksRecord): void {
-    this.taskRecords.push(taskRecord);
+  capture(taskRecord: TasksRecord): Promise<void> {
+    return new Promise((resolve) => {
+      this.taskRecords.push(taskRecord);
+      resolve();
+    });
   }
 }

@@ -8,17 +8,17 @@ export interface TasksMapper {
   /**
    * すべてのレコードを返す
    */
-  findAll(): TasksRecord[];
+  findAll(): Promise<TasksRecord[]>;
 
   /**
    * IDでレコードを検索する
    * @param {Uuid} uuid uuid
    */
-  findById(uuid: Uuid): TasksRecord | null;
+  findById(uuid: Uuid): Promise<TasksRecord | null>;
 
   /**
    * レコードの登録
    * @param {TasksRecord} taskRecord レコード
    */
-  capture(taskRecord: TasksRecord): void;
+  capture(taskRecord: TasksRecord): Promise<void>;
 }

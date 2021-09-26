@@ -17,9 +17,13 @@ export class TasksController {
     private readonly tasksRepository: TasksRepository,
   ) {}
 
+  /**
+   * 全件検索
+   * @returns タスク
+   */
   @Get()
-  findAll(): FindAllTasks {
-    const tasks: Tasks[] = this.tasksRepository.findAll();
+  async findAll(): Promise<FindAllTasks> {
+    const tasks: Tasks[] = await this.tasksRepository.findAll();
     const responseElements: FindAllTasksElement[] = tasks.map((t) => {
       return {
         id: t.id.value,
@@ -34,16 +38,21 @@ export class TasksController {
     };
   }
 
+  /**
+   * 1件登録
+   * @param {CaptureTasks} req リクエスト
+   * @returns FindAllTasksElement
+   */
   @Post()
   @HttpCode(201)
-  capture(@Body() req: CaptureTasks): FindAllTasksElement {
+  async capture(@Body() req: CaptureTasks): Promise<FindAllTasksElement> {
     const tasks = Tasks.of(
       req.title,
       req.description,
       req.status,
       req.deadline,
     );
-    this.tasksRepository.capture(tasks);
+    await this.tasksRepository.capture(tasks);
 
     return {
       id: tasks.id.value,

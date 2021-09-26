@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { InMemoryTasksMapper } from './infrastructure/inmemory.tasks.mapper';
-import { InMemoryTasksReposiory } from './infrastructure/inmemory.tasks.repository';
+import { DefaultTasksReposiory } from './infrastructure/inmemory.tasks.repository';
+import { LocalMongoDbTasksMapper } from './infrastructure/local.mongodb.tasks.mapper';
 import { TasksController } from './tasks.controller';
 
 @Module({
@@ -8,11 +9,11 @@ import { TasksController } from './tasks.controller';
   providers: [
     {
       provide: 'TasksRepository',
-      useClass: InMemoryTasksReposiory,
+      useClass: DefaultTasksReposiory,
     },
     {
       provide: 'TasksMapper',
-      useClass: InMemoryTasksMapper,
+      useClass: LocalMongoDbTasksMapper,
     },
   ],
 })

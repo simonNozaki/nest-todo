@@ -9,20 +9,20 @@ import { Description, Title, Uuid } from '../type/value.object';
  * インメモリタスクリポジトリ実装クラス
  */
 @Injectable()
-export class InMemoryTasksReposiory implements TasksRepository {
+export class DefaultTasksReposiory implements TasksRepository {
   constructor(
     @Inject('TasksMapper') private readonly tasksMapper: TasksMapper,
   ) {}
 
-  findAll(): Tasks[] {
-    const tasksRecords = this.tasksMapper.findAll();
+  async findAll(): Promise<Tasks[]> {
+    const tasksRecords = await this.tasksMapper.findAll();
     return tasksRecords.map((t) =>
       Tasks.of(t.title, t.description, t.status, t.deadline),
     );
   }
 
-  findById(uuid: Uuid): Tasks | null {
-    const recordOrNull = this.tasksMapper.findById(uuid);
+  async findById(uuid: Uuid): Promise<Tasks | null> {
+    const recordOrNull = await this.tasksMapper.findById(uuid);
     if (recordOrNull) {
       return new Tasks(
         new Uuid(recordOrNull.id),
@@ -35,7 +35,7 @@ export class InMemoryTasksReposiory implements TasksRepository {
     return null;
   }
 
-  capture(tasks: Tasks): Tasks {
+  async capture(tasks: Tasks): Promise<Tasks> {
     const now = new Date().toString();
     const tasksRecord: TasksRecord = {
       id: tasks.id.value,
@@ -48,7 +48,7 @@ export class InMemoryTasksReposiory implements TasksRepository {
       updatedAt: now,
       updatedBy: '',
     };
-    this.tasksMapper.capture(tasksRecord);
+    await this.tasksMapper.capture(tasksRecord);
 
     return tasks;
   }

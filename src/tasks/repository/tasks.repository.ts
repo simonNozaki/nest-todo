@@ -8,15 +8,15 @@ export interface TasksRepository {
   /**
    * すべてのタスクを取得する
    */
-  findAll(): Tasks[];
+  findAll(): Promise<Tasks[]>;
 
   /**
    * IDでタスクを検索する
    */
-  findById(uuid: Uuid): Tasks | null;
+  findById(uuid: Uuid): Promise<Tasks | null>;
 
   /**
    * タスクを一つ追加する
    */
-  capture(tasks: Tasks): Tasks;
+  capture(tasks: Tasks): Promise<Tasks>;
 }
