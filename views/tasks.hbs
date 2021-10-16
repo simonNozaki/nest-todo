@@ -2,6 +2,7 @@
 <html>
     <head>
         <title> nest-todo </title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     </head>
     <body>
         <h1> TODOリスト </h1>
@@ -12,5 +13,13 @@
             {{/each}}
         </ul>
         {{/each}} 
+        <div>
+            <form action="tasks" method="POST">
+                <input type="text" name="title" placeholder="タイトル...">
+                <input type="text" name="description" placeholder="説明...">
+                <input type="date" name="deadline" placeholder="期限...">
+                <input type="submit" value="追加する">                
+            </form>
+        </div>
     </body>
 </html>

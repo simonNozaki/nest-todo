@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  Inject,
-  Post,
-  Render,
-} from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post, Render } from '@nestjs/common';
 import { Tasks } from './model/tasks';
 import { TasksRepository } from './repository/tasks.repository';
 import { CaptureTasks } from './dto/create-tasks.interface';
@@ -53,12 +45,12 @@ export class TasksController {
    * @returns FindAllTasksElement
    */
   @Post()
-  @HttpCode(201)
+  @Render('tasks')
   async capture(@Body() req: CaptureTasks): Promise<FindAllTasksElement> {
     const tasks = Tasks.of(
       req.title,
       req.description,
-      req.status,
+      'UNPROCESSED',
       req.deadline,
     );
     await this.tasksRepository.capture(tasks);
