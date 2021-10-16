@@ -35,11 +35,33 @@ export class LocalMongoDbTasksMapper implements TasksMapper {
   }
 
   async findById(uuid: Uuid): Promise<TasksRecord> {
-    throw new Error('Method not implemented.');
+    const collection = await selectCollection<WithId<TasksRecord>>(
+      'local',
+      'tasks',
+    );
+
+    const result = await collection.findOne({ id: uuid.value });
+
+    return {
+      id: result.id,
+      title: result.title,
+      status: result.status,
+      description: result.description,
+      deadline: result.deadline,
+      createdAt: result.createdAt,
+      createdBy: result.createdBy,
+      updatedAt: result.updatedAt,
+      updatedBy: result.updatedBy,
+    };
   }
 
   async capture(taskRecord: TasksRecord): Promise<void> {
-    const collection = await selectCollection<TasksRecord>('local', 'tasks');
+    const collection = await selectCollection<WithId<TasksRecord>>(
+      'local',
+      'tasks',
+    );
     await collection.insertOne(taskRecord);
+
+    localMongoClient.close();
   }
 }
