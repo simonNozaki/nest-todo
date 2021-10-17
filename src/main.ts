@@ -9,7 +9,6 @@ async function bootstrap() {
 
   // 静的ファイル系
   app.setBaseViewsDir(join(__dirname, '..', 'views'));
-  app.useStaticAssets(join(__dirname, '..', 'public'));
   app.setViewEngine('hbs');
 
   // aopその他

@@ -17,6 +17,8 @@ export class TasksController {
     private readonly tasksRepository: TasksRepository,
   ) {}
 
+  private allTasks: FindAllTasks = { tasks: [] };
+
   /**
    * 全件検索
    * @returns タスク
@@ -34,9 +36,11 @@ export class TasksController {
         deadline: t.deadline,
       };
     });
-    return {
-      tasks: responseElements,
-    };
+    if (this.allTasks.tasks.length === 0) {
+      this.allTasks.tasks = responseElements;
+    }
+
+    return this.allTasks;
   }
 
   /**
@@ -46,21 +50,24 @@ export class TasksController {
    */
   @Post()
   @Render('tasks')
-  async capture(@Body() req: CaptureTasks): Promise<FindAllTasksElement> {
+  async capture(@Body() req: CaptureTasks): Promise<FindAllTasks> {
     const tasks = Tasks.of(
       req.title,
       req.description,
       'UNPROCESSED',
       req.deadline,
     );
-    await this.tasksRepository.capture(tasks);
-
-    return {
+    this.allTasks.tasks.push({
       id: tasks.id.value,
       title: tasks.title.title,
       description: tasks.description.value,
       status: tasks.status,
       deadline: tasks.deadline,
-    };
+    });
+
+    // 登録は任せたらいいのでawaitしない
+    this.tasksRepository.capture(tasks);
+
+    return this.allTasks;
   }
 }

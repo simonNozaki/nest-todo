@@ -3,23 +3,27 @@
     <head>
         <title> nest-todo </title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     </head>
     <body>
-        <h1> TODOリスト </h1>
-        {{#each tasks}}
-        <ul>
-            {{#each this}}
-                <li> {{@key}}: {{this}} </li>
-            {{/each}}
-        </ul>
-        {{/each}} 
-        <div>
-            <form action="tasks" method="POST">
-                <input type="text" name="title" placeholder="タイトル...">
-                <input type="text" name="description" placeholder="説明...">
-                <input type="date" name="deadline" placeholder="期限...">
-                <input type="submit" value="追加する">                
-            </form>
+        <div class="container">
+            <h1> TODOリスト </h1>
+            {{#each tasks}}
+            <ul class="collection">
+                {{#each this}}
+                    <li class="collection-item"> {{this}} </li>
+                {{/each}}
+            </ul>
+            {{/each}} 
+            <div>
+                <form action="tasks" method="POST">
+                    <input type="text" name="title" placeholder="タイトル...">
+                    <input type="text" name="description" placeholder="説明...">
+                    <input type="date" name="deadline" placeholder="期限...">
+                    <input type="submit" value="追加する">                
+                </form>
+            </div>
         </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     </body>
 </html>
