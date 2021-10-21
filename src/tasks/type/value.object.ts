@@ -1,4 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
+import { AppValidationException } from 'src/application/exception/app.validation.execption';
 import { v4 } from 'uuid';
 
 /**
@@ -15,7 +16,11 @@ export type TasksStatusJp = '未処理' | '対応中' | '完了' | '削除';
  * UUID値オブジェクト
  */
 export class Uuid {
-  constructor(private readonly _value: string) {}
+  constructor(private readonly _value: string) {
+    if (this._value === '') {
+      throw new AppValidationException('e.validation.tasks.id.blank');
+    }
+  }
 
   static of(): Uuid {
     return new Uuid(v4().toString());
@@ -54,6 +59,10 @@ export class Description {
       throw new BadRequestException(
         'e.validation.tasks.description.invalid_length',
       );
+    }
+    // デフォルト値の設定
+    if (this._value === '') {
+      this._value = '説明はありません';
     }
   }
 
