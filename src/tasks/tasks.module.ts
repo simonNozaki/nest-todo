@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { InMemoryStorage } from 'src/application/inmemory.storage';
 import { InMemoryTasksMapper } from './infrastructure/inmemory.tasks.mapper';
 import { DefaultTasksReposiory } from './infrastructure/inmemory.tasks.repository';
 import { LocalMongoDbTasksMapper } from './infrastructure/local.mongodb.tasks.mapper';
@@ -14,6 +15,10 @@ import { TasksController } from './tasks.controller';
     {
       provide: 'TasksMapper',
       useClass: InMemoryTasksMapper,
+    },
+    {
+      provide: 'ServerLocalStorage',
+      useClass: InMemoryStorage,
     },
   ],
 })

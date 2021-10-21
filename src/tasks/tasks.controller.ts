@@ -6,6 +6,7 @@ import {
   FindAllTasks,
   FindAllTasksElement,
 } from './dto/find-all-tasks.interface';
+import { ServerLocalStorage } from 'src/application/inmemory.storage';
 
 /**
  * タスクドメインコントローラクラス
@@ -15,9 +16,9 @@ export class TasksController {
   constructor(
     @Inject('TasksRepository')
     private readonly tasksRepository: TasksRepository,
+    @Inject('ServerLocalStorage')
+    private readonly serverLocalStorage: ServerLocalStorage<FindAllTasksElement>,
   ) {}
-
-  private allTasks: FindAllTasks = { tasks: [] };
 
   /**
    * 全件検索
@@ -36,11 +37,13 @@ export class TasksController {
         deadline: t.deadline,
       };
     });
-    if (this.allTasks.tasks.length === 0) {
-      this.allTasks.tasks = responseElements;
+    if (!this.serverLocalStorage.hasItems()) {
+      this.serverLocalStorage.setItems(responseElements);
     }
 
-    return this.allTasks;
+    return {
+      tasks: this.serverLocalStorage.getItem(),
+    };
   }
 
   /**
@@ -57,7 +60,7 @@ export class TasksController {
       'UNPROCESSED',
       req.deadline,
     );
-    this.allTasks.tasks.push({
+    this.serverLocalStorage.setItem({
       id: tasks.id.value,
       title: tasks.title.title,
       description: tasks.description.value,
@@ -68,6 +71,8 @@ export class TasksController {
     // 登録は任せたらいいのでawaitしない
     this.tasksRepository.capture(tasks);
 
-    return this.allTasks;
+    return {
+      tasks: this.serverLocalStorage.getItem(),
+    };
   }
 }
