@@ -7,6 +7,7 @@ import {
   FindAllTasksElement,
 } from './dto/find-all-tasks.interface';
 import { ServerLocalStorage } from 'src/application/inmemory.storage';
+import { TasksStatus, TasksStatusJp } from './type/value.object';
 
 /**
  * タスクドメインコントローラクラス
@@ -33,7 +34,7 @@ export class TasksController {
         id: t.id.value,
         title: t.title.title,
         description: t.description.value,
-        status: t.status,
+        status: this.convertStatusToJp(t.status),
         deadline: t.deadline,
       };
     });
@@ -64,7 +65,7 @@ export class TasksController {
       id: tasks.id.value,
       title: tasks.title.title,
       description: tasks.description.value,
-      status: tasks.status,
+      status: this.convertStatusToJp(tasks.status),
       deadline: tasks.deadline,
     });
 
@@ -74,5 +75,20 @@ export class TasksController {
     return {
       tasks: this.serverLocalStorage.getItem(),
     };
+  }
+
+  private convertStatusToJp(status: TasksStatus): TasksStatusJp {
+    switch (status) {
+      case 'UNPROCESSED':
+        return '未処理';
+      case 'IN PROGRESS':
+        return '対応中';
+      case 'DONE':
+        return '完了';
+      case 'GONE':
+        return '削除';
+      default:
+        throw new Error('e.system.general.general.unexpected_error');
+    }
   }
 }
