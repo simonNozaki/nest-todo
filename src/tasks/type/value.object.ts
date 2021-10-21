@@ -7,6 +7,11 @@ import { v4 } from 'uuid';
 export type TasksStatus = 'UNPROCESSED' | 'IN PROGRESS' | 'DONE' | 'GONE';
 
 /**
+ * ステータス日本語Enum、表示変換用
+ */
+export type TasksStatusJp = '未処理' | '対応中' | '完了' | '削除';
+
+/**
  * UUID値オブジェクト
  */
 export class Uuid {
