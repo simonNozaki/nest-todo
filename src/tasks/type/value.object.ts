@@ -12,6 +12,33 @@ export type TasksStatus = 'UNPROCESSED' | 'IN PROGRESS' | 'DONE' | 'GONE';
  */
 export type TasksStatusJp = '未処理' | '対応中' | '完了' | '削除';
 
+export class Status {
+  constructor(private _tasksStatus: TasksStatus) {}
+
+  get value(): TasksStatus {
+    return this._tasksStatus;
+  }
+
+  /**
+   * コンストラクタのステータスを日本語表記にする
+   * @returns
+   */
+  convertToJp(): TasksStatusJp {
+    switch (this._tasksStatus) {
+      case 'UNPROCESSED':
+        return '未処理';
+      case 'IN PROGRESS':
+        return '対応中';
+      case 'DONE':
+        return '完了';
+      case 'GONE':
+        return '削除';
+      default:
+        throw new Error('e.system.general.general.unexpected_error');
+    }
+  }
+}
+
 /**
  * UUID値オブジェクト
  */

@@ -3,7 +3,7 @@ import { TasksRecord } from './tasks.record';
 import { Tasks } from '../model/tasks';
 import { TasksRepository } from '../repository/tasks.repository';
 import { TasksMapper } from './tasks.mapper';
-import { Description, Title, Uuid } from '../type/value.object';
+import { Description, Status, Title, Uuid } from '../type/value.object';
 
 /**
  * インメモリタスクリポジトリ実装クラス
@@ -17,7 +17,7 @@ export class DefaultTasksReposiory implements TasksRepository {
   async findAll(): Promise<Tasks[]> {
     const tasksRecords = await this.tasksMapper.findAll();
     return tasksRecords.map((t) =>
-      Tasks.of(t.title, t.description, t.status, t.deadline),
+      Tasks.of(t.title, t.description, new Status(t.status), t.deadline),
     );
   }
 
@@ -28,7 +28,7 @@ export class DefaultTasksReposiory implements TasksRepository {
         new Uuid(recordOrNull.id),
         new Title(recordOrNull.title),
         new Description(recordOrNull.description),
-        recordOrNull.status,
+        new Status(recordOrNull.status),
         recordOrNull.deadline,
       );
     }
@@ -41,7 +41,7 @@ export class DefaultTasksReposiory implements TasksRepository {
       id: tasks.id.value,
       title: tasks.title.title,
       description: tasks.description.value,
-      status: tasks.status,
+      status: tasks.status.value,
       deadline: tasks.deadline,
       createdAt: now,
       createdBy: '',

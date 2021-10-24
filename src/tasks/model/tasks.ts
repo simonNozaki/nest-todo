@@ -1,4 +1,4 @@
-import { Description, TasksStatus, Title, Uuid } from '../type/value.object';
+import { Description, Status, Title, Uuid } from '../type/value.object';
 
 /**
  * タスクオブジェクトクラス
@@ -8,7 +8,7 @@ export class Tasks {
     readonly id: Uuid,
     readonly title: Title,
     readonly description: Description,
-    readonly status: TasksStatus,
+    readonly status: Status,
     readonly deadline: Date,
   ) {}
 
@@ -23,7 +23,7 @@ export class Tasks {
   static of(
     title: string,
     description: string,
-    status: TasksStatus,
+    status: Status,
     deadline: Date,
   ): Tasks {
     return new Tasks(
@@ -44,7 +44,7 @@ export class Tasks {
       this.id,
       this.title,
       this.description,
-      'DONE',
+      new Status('DONE'),
       this.deadline,
     );
   }
@@ -58,7 +58,7 @@ export class Tasks {
       this.id,
       this.title,
       this.description,
-      'GONE',
+      new Status('GONE'),
       this.deadline,
     );
   }
