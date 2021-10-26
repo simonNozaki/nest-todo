@@ -12,12 +12,20 @@ import { Description, Status, Title, Uuid } from '../type/value.object';
 export class DefaultTasksReposiory implements TasksRepository {
   constructor(
     @Inject('TasksMapper') private readonly tasksMapper: TasksMapper,
+    @Inject('Uuid') private readonly uuid: Uuid,
   ) {}
 
   async findAll(): Promise<Tasks[]> {
     const tasksRecords = await this.tasksMapper.findAll();
-    return tasksRecords.map((t) =>
-      Tasks.of(t.title, t.description, new Status(t.status), t.deadline),
+    return tasksRecords.map(
+      (t) =>
+        new Tasks(
+          this.uuid.create(),
+          new Title(t.title),
+          new Description(t.description),
+          new Status(t.status),
+          t.deadline,
+        ),
     );
   }
 
@@ -25,7 +33,7 @@ export class DefaultTasksReposiory implements TasksRepository {
     const recordOrNull = await this.tasksMapper.findById(uuid);
     if (recordOrNull) {
       return new Tasks(
-        new Uuid(recordOrNull.id),
+        this.uuid.create(recordOrNull.id),
         new Title(recordOrNull.title),
         new Description(recordOrNull.description),
         new Status(recordOrNull.status),

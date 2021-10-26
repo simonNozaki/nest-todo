@@ -1,3 +1,4 @@
+import { Inject } from '@nestjs/common';
 import { Description, Status, Title, Uuid } from '../type/value.object';
 
 /**
@@ -5,35 +6,12 @@ import { Description, Status, Title, Uuid } from '../type/value.object';
  */
 export class Tasks {
   constructor(
-    readonly id: Uuid,
+    @Inject('Uuid') readonly id: Uuid,
     readonly title: Title,
     readonly description: Description,
     readonly status: Status,
     readonly deadline: Date,
   ) {}
-
-  /**
-   * ファクトリメソッド
-   * @param {string} title タイトル
-   * @param {string} description 説明
-   * @param {TasksStatus} status ステータス
-   * @param {Date} deadline 期限
-   * @returns Tasks
-   */
-  static of(
-    title: string,
-    description: string,
-    status: Status,
-    deadline: Date,
-  ): Tasks {
-    return new Tasks(
-      Uuid.of(),
-      new Title(title),
-      new Description(description),
-      status,
-      deadline,
-    );
-  }
 
   /**
    * 完了にする

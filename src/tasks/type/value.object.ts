@@ -40,21 +40,35 @@ export class Status {
 }
 
 /**
+ * UUIDインターフェース
+ */
+export interface Uuid {
+  /**
+   * ファクトリメソッド
+   * @param v
+   */
+  create(v?: string): Uuid;
+
+  get value(): string;
+}
+
+/**
  * UUID値オブジェクト
  */
-export class Uuid {
+export class BasicUuid implements Uuid {
   constructor(private readonly _value: string) {
     if (this._value === '') {
       throw new AppValidationException('e.validation.tasks.id.blank');
     }
   }
-
-  static of(): Uuid {
-    return new Uuid(v4().toString());
-  }
-
   get value(): string {
-    return this._value;
+    throw new Error('Method not implemented.');
+  }
+  create(v?: string): Uuid {
+    if (v) {
+      return new BasicUuid(v);
+    }
+    return new BasicUuid(v4().toString());
   }
 }
 

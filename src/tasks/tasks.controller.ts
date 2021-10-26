@@ -7,7 +7,7 @@ import {
   FindAllTasksElement,
 } from './dto/find-all-tasks.interface';
 import { ServerLocalStorage } from 'src/application/inmemory.storage';
-import { Status } from './type/value.object';
+import { Description, Status, Title, Uuid } from './type/value.object';
 
 /**
  * タスクドメインコントローラクラス
@@ -19,6 +19,8 @@ export class TasksController {
     private readonly tasksRepository: TasksRepository,
     @Inject('ServerLocalStorage')
     private readonly serverLocalStorage: ServerLocalStorage<FindAllTasksElement>,
+    @Inject('Uuid')
+    private readonly uuid: Uuid,
   ) {}
 
   /**
@@ -55,9 +57,10 @@ export class TasksController {
   @Post()
   @Render('tasks')
   async capture(@Body() req: CaptureTasks): Promise<FindAllTasks> {
-    const tasks = Tasks.of(
-      req.title,
-      req.description,
+    const tasks = new Tasks(
+      this.uuid.create(),
+      new Title(req.title),
+      new Description(req.description),
       new Status('UNPROCESSED'),
       req.deadline,
     );
