@@ -77,10 +77,6 @@ export class BasicUuid implements Uuid {
  */
 export class Title {
   constructor(private readonly _title: string) {
-    if (!this._title) {
-      throw new BadRequestException('e.validation.tasks.title.blank');
-    }
-
     if (this._title.length > 200 || this._title.length === 0) {
       throw new BadRequestException('e.validation.tasks.title.invalid_length');
     }
