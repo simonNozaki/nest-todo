@@ -10,6 +10,13 @@ $npm run start
 
 ![startup](docs/startup.png)
 
+
+## ドメインの知識、表現
+- このアプリケーションはドメイン駆動設計の概念を使ったモデリング、実装を採用している。
+- タスク管理ツールのドメイン知識。足りないユースケースはのちほど。
+
+![task-domain-model](docs/task-domain-model.png)
+
 ## レイヤリング
 アプリケーションはTODO(タスク)を中心に構築される。
 
