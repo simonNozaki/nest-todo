@@ -4,6 +4,7 @@ import { Tasks } from '../model/tasks';
 import { TasksRepository } from '../repository/tasks.repository';
 import { TasksMapper } from './tasks.mapper';
 import { Description, Status, Title, Uuid } from '../type/value.object';
+import { ServerLocalStorage } from 'src/application/inmemory.storage';
 
 /**
  * インメモリタスクリポジトリ実装クラス
@@ -11,16 +12,21 @@ import { Description, Status, Title, Uuid } from '../type/value.object';
 @Injectable()
 export class DefaultTasksReposiory implements TasksRepository {
   constructor(
-    @Inject('TasksMapper') private readonly tasksMapper: TasksMapper,
-    @Inject('Uuid') private readonly uuid: Uuid,
+    @Inject('TasksMapper')
+    private readonly tasksMapper: TasksMapper,
+    @Inject('Uuid')
+    private readonly uuid: Uuid,
+    @Inject('ServerLocalStorage')
+    private readonly serverLocalStorage: ServerLocalStorage<Tasks>,
   ) {}
 
   async findAll(): Promise<Tasks[]> {
     const tasksRecords = await this.tasksMapper.findAll();
+    // 永続化されたレコードからドメインオブジェクトに変換
     return tasksRecords.map(
       (t) =>
         new Tasks(
-          this.uuid.create(),
+          this.uuid.create(t.id),
           new Title(t.title),
           new Description(t.description),
           new Status(t.status),
@@ -56,7 +62,18 @@ export class DefaultTasksReposiory implements TasksRepository {
       updatedAt: now,
       updatedBy: '',
     };
-    await this.tasksMapper.capture(tasksRecord);
+    // 永続化は非同期で放置
+    this.tasksMapper.capture(tasksRecord);
+    // キャッシュ化
+    this.serverLocalStorage.setItem(
+      new Tasks(
+        tasks.id,
+        tasks.title,
+        tasks.description,
+        tasks.status,
+        tasks.deadline,
+      ),
+    );
 
     return tasks;
   }

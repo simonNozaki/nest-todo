@@ -57,20 +57,13 @@ export class TasksController {
   @Post()
   @Render('tasks')
   async capture(@Body() req: CaptureTasks): Promise<FindAllTasks> {
-    const tasks = new Tasks(
+    const tasks = Tasks.add(
       this.uuid.create(),
       new Title(req.title),
       new Description(req.description),
       new Status('UNPROCESSED'),
       req.deadline,
     );
-    this.serverLocalStorage.setItem({
-      id: tasks.id.value,
-      title: tasks.title.title,
-      description: tasks.description.value,
-      status: tasks.status.convertToJp(),
-      deadline: tasks.deadline,
-    });
 
     // 登録は任せたらいいのでawaitしない
     this.tasksRepository.capture(tasks);
