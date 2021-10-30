@@ -62,7 +62,7 @@ export class BasicUuid implements Uuid {
     }
   }
   get value(): string {
-    throw new Error('Method not implemented.');
+    return this._value;
   }
   create(v?: string): Uuid {
     if (v) {
