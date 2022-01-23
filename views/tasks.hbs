@@ -17,6 +17,11 @@
                         {{/each}}
                     </ul>
                     {{/each}} 
+                    {{#each errors}}
+                    <ul>
+                        <li class="collection-item"> {{this}} </li>
+                    </ul>
+                    {{/each}}
                 </div>
                 <div class="col s6">
                     <form action="tasks" method="POST">
@@ -29,5 +34,6 @@
             </div>
         </div>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+        <script src="js/index.js"></script>
     </body>
 </html>
