@@ -1,4 +1,4 @@
-import { BadRequestException } from '@nestjs/common';
+import { ErrorConst } from 'src/application/error.consts';
 import { AppValidationException } from 'src/application/exception/app.validation.execption';
 import { v4 } from 'uuid';
 
@@ -17,7 +17,18 @@ export type TasksStatus = 'UNPROCESSED' | 'IN PROGRESS' | 'DONE' | 'GONE';
  */
 export type TasksStatusJp = '未処理' | '対応中' | '完了' | '削除';
 
+/**
+ * 値オブジェクト基底オブジェクト
+ */
+abstract class ValueObject<T> {
+  abstract equals(t: T): boolean;
+}
+
+/**
+ * ステータス値オブジェクト
+ */
 export class Status {
+  typeStatus: PreferNominal;
   constructor(private _tasksStatus: TasksStatus) {}
 
   get value(): TasksStatus {
@@ -39,7 +50,7 @@ export class Status {
       case 'GONE':
         return '削除';
       default:
-        throw new Error('e.system.general.general.unexpected_error');
+        throw new Error(ErrorConst.E_SYSTEM_UNEXPECTED_ERROR.value);
     }
   }
 }
@@ -47,7 +58,7 @@ export class Status {
 /**
  * UUIDインターフェース
  */
-export interface Uuid {
+export interface Uuid extends ValueObject<Uuid> {
   /**
    * ファクトリメソッド
    * @param v
@@ -63,10 +74,10 @@ export interface Uuid {
  * UUID値オブジェクト
  */
 export class BasicUuid implements Uuid {
-  basicUuid: PreferNominal;
+  typeBasicUuid: PreferNominal;
   constructor(private readonly _value: string) {
     if (this._value === '') {
-      throw new AppValidationException('e.validation.tasks.id.blank');
+      throw new AppValidationException(ErrorConst.E_VALIDATION_ID_BLANK.value);
     }
   }
   get value(): string {
@@ -86,10 +97,17 @@ export class BasicUuid implements Uuid {
 /**
  * タイトル値オブジェクト
  */
-export class Title {
+export class Title extends ValueObject<Title> {
+  typeTitle: PreferNominal;
+  equals(t: Title): boolean {
+    return this._title === t.title;
+  }
   constructor(private readonly _title: string) {
+    super();
     if (this._title.length > 200 || this._title.length === 0) {
-      throw new BadRequestException('e.validation.tasks.title.invalid_length');
+      throw new AppValidationException(
+        ErrorConst.E_VALIDATION_TITLE_INVALID_LENGTH.value,
+      );
     }
   }
 
@@ -101,11 +119,16 @@ export class Title {
 /**
  * 説明値オブジェクト
  */
-export class Description {
+export class Description extends ValueObject<Description> {
+  typeDescription: PreferNominal;
+  equals(t: Description): boolean {
+    return this._value === t.value;
+  }
   constructor(private readonly _value: string) {
+    super();
     if (this._value.length > 500) {
-      throw new BadRequestException(
-        'e.validation.tasks.description.invalid_length',
+      throw new AppValidationException(
+        ErrorConst.E_VALIDATION_DESCRIPTION_INVALID_LENGTH.value,
       );
     }
     // デフォルト値の設定
