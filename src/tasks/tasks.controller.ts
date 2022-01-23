@@ -7,6 +7,9 @@ import {
 } from './dto/find-all-tasks.interface';
 import { SaveTasksUseCase } from './usecase/save.tasks.usecase';
 import { FindAllTasksUseCase } from './usecase/find.all.tasks.usecase';
+import { Resultt } from 'resultt';
+import { AppValidationException } from 'src/application/exception/app.validation.execption';
+import { ErrorConst } from 'src/application/error.consts';
 
 /**
  * タスクドメインコントローラクラス
@@ -27,10 +30,21 @@ export class TasksController {
   @Get()
   @Render('tasks')
   async findAll(): Promise<FindAllTasks> {
-    const tasks: Tasks[] = await this.findAllTasksUseCase.execute();
+    const errors: string[] = [];
+    let tasks: Tasks[] = [];
+    try {
+      tasks = await this.findAllTasksUseCase.execute();
+    } catch (e) {
+      if (e instanceof AppValidationException) {
+        errors.push(e.message);
+      } else {
+        errors.push(ErrorConst.E_SYSTEM_UNEXPECTED_ERROR.value);
+      }
+    }
 
     return {
       tasks: this.toFindAllTasksElement(tasks),
+      errors: errors,
     };
   }
 
@@ -42,10 +56,21 @@ export class TasksController {
   @Post()
   @Render('tasks')
   async capture(@Body() req: CaptureTasks): Promise<FindAllTasks> {
-    const tasks = await this.saveTasksUseCase.execute(req);
+    const errors: string[] = [];
+    let tasks: Tasks[] = [];
+    try {
+      tasks = await this.saveTasksUseCase.execute(req);
+    } catch (e) {
+      if (e instanceof AppValidationException) {
+        errors.push(e.message);
+      } else {
+        errors.push(ErrorConst.E_SYSTEM_UNEXPECTED_ERROR.value);
+      }
+    }
 
     return {
       tasks: this.toFindAllTasksElement(tasks),
+      errors: errors,
     };
   }
 

@@ -2,6 +2,7 @@ import { TasksStatusJp } from '../type/value.object';
 
 export type FindAllTasks = {
   tasks: FindAllTasksElement[];
+  errors: string[];
 };
 
 export type FindAllTasksElement = {
