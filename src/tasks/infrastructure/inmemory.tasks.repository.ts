@@ -4,7 +4,6 @@ import { Tasks } from '../model/tasks';
 import { TasksRepository } from '../repository/tasks.repository';
 import { TasksMapper } from './tasks.mapper';
 import { Description, Status, Title, Uuid } from '../type/value.object';
-import { ServerLocalStorage } from 'src/application/inmemory.storage';
 
 /**
  * インメモリタスクリポジトリ実装クラス
@@ -16,14 +15,14 @@ export class DefaultTasksReposiory implements TasksRepository {
     private readonly tasksMapper: TasksMapper,
     @Inject('Uuid')
     private readonly uuid: Uuid,
-    @Inject('ServerLocalStorage')
-    private readonly serverLocalStorage: ServerLocalStorage<Tasks>,
   ) {}
+
+  private readonly tasks: Tasks[] = [];
 
   async findAll(): Promise<Tasks[]> {
     const tasksRecords = await this.tasksMapper.findAll();
     // 永続化されたレコードからドメインオブジェクトに変換
-    return tasksRecords.map(
+    const tasks: Tasks[] = tasksRecords.map(
       (t) =>
         new Tasks(
           this.uuid.create(t.id),
@@ -33,18 +32,16 @@ export class DefaultTasksReposiory implements TasksRepository {
           t.deadline,
         ),
     );
+
+    this.setTasksDedepulicated(tasks);
+
+    return tasks;
   }
 
   async findById(uuid: Uuid): Promise<Tasks | null> {
-    const recordOrNull = await this.tasksMapper.findById(uuid);
-    if (recordOrNull) {
-      return new Tasks(
-        this.uuid.create(recordOrNull.id),
-        new Title(recordOrNull.title),
-        new Description(recordOrNull.description),
-        new Status(recordOrNull.status),
-        recordOrNull.deadline,
-      );
+    const target = this.tasks.filter((task) => task.id.value === uuid.value);
+    if (target.length > 0) {
+      return target[0];
     }
     return null;
   }
@@ -62,19 +59,24 @@ export class DefaultTasksReposiory implements TasksRepository {
       updatedAt: now,
       updatedBy: '',
     };
-    // 永続化は非同期で放置
+
     this.tasksMapper.capture(tasksRecord);
-    // キャッシュ化
-    this.serverLocalStorage.setItem(
-      new Tasks(
-        tasks.id,
-        tasks.title,
-        tasks.description,
-        tasks.status,
-        tasks.deadline,
-      ),
-    );
+
+    this.tasks.push(tasks);
 
     return tasks;
+  }
+
+  /**
+   * 重複なくタスクを登録する
+   * @param {Tasks[]} tasks
+   */
+  private setTasksDedepulicated(tasks: Tasks[]) {
+    for (const task of tasks) {
+      const exist = this.tasks.some((it) => !it.id.equals(task.id));
+      if (exist) {
+        this.tasks.push(task);
+      }
+    }
   }
 }
