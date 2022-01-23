@@ -1,13 +1,12 @@
 import { Body, Controller, Get, Inject, Post, Render } from '@nestjs/common';
 import { Tasks } from './model/tasks';
-import { TasksRepository } from './repository/tasks.repository';
 import { CaptureTasks } from './dto/create-tasks.interface';
 import {
   FindAllTasks,
   FindAllTasksElement,
 } from './dto/find-all-tasks.interface';
-import { ServerLocalStorage } from 'src/application/inmemory.storage';
-import { Description, Status, Title, Uuid } from './type/value.object';
+import { SaveTasksUseCase } from './usecase/save.tasks.usecase';
+import { FindAllTasksUseCase } from './usecase/find.all.tasks.usecase';
 
 /**
  * タスクドメインコントローラクラス
@@ -15,12 +14,10 @@ import { Description, Status, Title, Uuid } from './type/value.object';
 @Controller('tasks')
 export class TasksController {
   constructor(
-    @Inject('TasksRepository')
-    private readonly tasksRepository: TasksRepository,
-    @Inject('ServerLocalStorage')
-    private readonly serverLocalStorage: ServerLocalStorage<FindAllTasksElement>,
-    @Inject('Uuid')
-    private readonly uuid: Uuid,
+    @Inject('FindAllTasksUseCase')
+    private readonly findAllTasksUseCase: FindAllTasksUseCase,
+    @Inject('SaveTasksUseCase')
+    private readonly saveTasksUseCase: SaveTasksUseCase,
   ) {}
 
   /**
@@ -30,22 +27,10 @@ export class TasksController {
   @Get()
   @Render('tasks')
   async findAll(): Promise<FindAllTasks> {
-    const tasks: Tasks[] = await this.tasksRepository.findAll();
-    const responseElements: FindAllTasksElement[] = tasks.map((t) => {
-      return {
-        id: t.id.value,
-        title: t.title.title,
-        description: t.description.value,
-        status: t.status.convertToJp(),
-        deadline: t.deadline,
-      };
-    });
-    if (!this.serverLocalStorage.hasItems()) {
-      this.serverLocalStorage.setItems(responseElements);
-    }
+    const tasks: Tasks[] = await this.findAllTasksUseCase.execute();
 
     return {
-      tasks: this.serverLocalStorage.getItem(),
+      tasks: this.toFindAllTasksElement(tasks),
     };
   }
 
@@ -57,19 +42,26 @@ export class TasksController {
   @Post()
   @Render('tasks')
   async capture(@Body() req: CaptureTasks): Promise<FindAllTasks> {
-    const tasks = Tasks.add(
-      this.uuid.create(),
-      new Title(req.title),
-      new Description(req.description),
-      new Status('UNPROCESSED'),
-      req.deadline,
-    );
-
-    // 登録は任せたらいいのでawaitしない
-    this.tasksRepository.capture(tasks);
+    const tasks = await this.saveTasksUseCase.execute(req);
 
     return {
-      tasks: this.serverLocalStorage.getItem(),
+      tasks: this.toFindAllTasksElement(tasks),
     };
+  }
+
+  /**
+   * ドメインオブジェクトからUI描画オブジェクトに変換する
+   * @param {Tasks[]} tasks
+   */
+  private toFindAllTasksElement(tasks: Tasks[]): FindAllTasksElement[] {
+    return tasks.map((t) => {
+      return {
+        id: t.id.value,
+        title: t.title.title,
+        description: t.description.value,
+        status: t.status.convertToJp(),
+        deadline: t.deadline,
+      };
+    });
   }
 }

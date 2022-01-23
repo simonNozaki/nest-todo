@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { InMemoryStorage } from 'src/application/inmemory.storage';
 import { InMemoryTasksMapper } from './infrastructure/inmemory.tasks.mapper';
 import { DefaultTasksReposiory } from './infrastructure/inmemory.tasks.repository';
-import { LocalMongoDbTasksMapper } from './infrastructure/local.mongodb.tasks.mapper';
 import { TasksController } from './tasks.controller';
 import { BasicUuid } from './type/value.object';
+import { FindAllTasksUseCase } from './usecase/find.all.tasks.usecase';
+import { SaveTasksUseCase } from './usecase/save.tasks.usecase';
 
 @Module({
   controllers: [TasksController],
@@ -18,12 +18,16 @@ import { BasicUuid } from './type/value.object';
       useClass: InMemoryTasksMapper,
     },
     {
-      provide: 'ServerLocalStorage',
-      useClass: InMemoryStorage,
-    },
-    {
       provide: 'Uuid',
       useClass: BasicUuid,
+    },
+    {
+      provide: 'SaveTasksUseCase',
+      useClass: SaveTasksUseCase,
+    },
+    {
+      provide: 'FindAllTasksUseCase',
+      useClass: FindAllTasksUseCase,
     },
   ],
 })
