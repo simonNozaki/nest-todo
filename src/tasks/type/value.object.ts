@@ -3,6 +3,11 @@ import { AppValidationException } from 'src/application/exception/app.validation
 import { v4 } from 'uuid';
 
 /**
+ * 公称型指定
+ */
+type PreferNominal = never;
+
+/**
  * ステータスEnum
  */
 export type TasksStatus = 'UNPROCESSED' | 'IN PROGRESS' | 'DONE' | 'GONE';
@@ -50,12 +55,15 @@ export interface Uuid {
   create(v?: string): Uuid;
 
   get value(): string;
+
+  equals(uuid: Uuid): boolean;
 }
 
 /**
  * UUID値オブジェクト
  */
 export class BasicUuid implements Uuid {
+  basicUuid: PreferNominal;
   constructor(private readonly _value: string) {
     if (this._value === '') {
       throw new AppValidationException('e.validation.tasks.id.blank');
@@ -69,6 +77,9 @@ export class BasicUuid implements Uuid {
       return new BasicUuid(v);
     }
     return new BasicUuid(v4().toString());
+  }
+  equals(uuid: Uuid): boolean {
+    return this._value === uuid.value;
   }
 }
 
