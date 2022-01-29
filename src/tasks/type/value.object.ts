@@ -1,5 +1,5 @@
-import { ErrorConst } from 'src/application/error.consts';
-import { AppValidationException } from 'src/application/exception/app.validation.execption';
+import { ErrorConst } from '../../application/error.consts';
+import { AppValidationException } from '../../application/exception/app.validation.execption';
 import { v4 } from 'uuid';
 
 /**
@@ -77,7 +77,7 @@ export class BasicUuid implements Uuid {
   typeBasicUuid: PreferNominal;
   constructor(private readonly _value: string) {
     if (this._value === '') {
-      throw new AppValidationException(ErrorConst.E_VALIDATION_ID_BLANK.value);
+      throw new AppValidationException(ErrorConst.E_VALIDATION_ID_BLANK);
     }
   }
   get value(): string {
@@ -106,7 +106,7 @@ export class Title extends ValueObject<Title> {
     super();
     if (this._title.length > 200 || this._title.length === 0) {
       throw new AppValidationException(
-        ErrorConst.E_VALIDATION_TITLE_INVALID_LENGTH.value,
+        ErrorConst.E_VALIDATION_TITLE_INVALID_LENGTH,
       );
     }
   }
@@ -128,7 +128,7 @@ export class Description extends ValueObject<Description> {
     super();
     if (this._value.length > 500) {
       throw new AppValidationException(
-        ErrorConst.E_VALIDATION_DESCRIPTION_INVALID_LENGTH.value,
+        ErrorConst.E_VALIDATION_DESCRIPTION_INVALID_LENGTH,
       );
     }
     // デフォルト値の設定

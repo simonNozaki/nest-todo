@@ -1,5 +1,6 @@
 import { Inject } from '@nestjs/common';
-import { DomainRuleException } from 'src/application/exception/domain.rule.exception';
+import { ErrorConst } from 'src/application/error.consts';
+import { AppValidationException } from 'src/application/exception/app.validation.execption';
 import { Description, Status, Title, Uuid } from '../type/value.object';
 
 /**
@@ -33,13 +34,15 @@ export class Tasks {
     // 新規タスクは過去日付ではいけない
     if (deadline && deadline < new Date()) {
       // todo: あとでドメイン層の実行時例外にする
-      throw new DomainRuleException(
-        'e.validation.tasks.deadline.rule_violation',
+      throw new AppValidationException(
+        ErrorConst.E_VALIDATION_DEADLINE_IS_PAST,
       );
     }
     // 新規タスクは完了、未処理ではいけない
     if (status.value === 'DONE' || status.value === 'GONE') {
-      throw new DomainRuleException('e.validation.tasks.status.rule_violation');
+      throw new AppValidationException(
+        ErrorConst.E_VALIDATION_STATUS_NOT_IN_PROGRESS,
+      );
     }
     return new Tasks(id, title, description, status, deadline);
   }
@@ -52,7 +55,9 @@ export class Tasks {
   updateStatus(status: Status): Tasks {
     // ステータスを更新するときは "未処理" に戻してはいけない
     if (status.value === 'UNPROCESSED') {
-      throw new DomainRuleException('e.validation.tasks.status.rule_violation');
+      throw new AppValidationException(
+        ErrorConst.E_VALIDATION_STATUS_CANNOT_UPDATE,
+      );
     }
     return new Tasks(
       this.id,
