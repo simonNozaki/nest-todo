@@ -1,6 +1,6 @@
 import { Inject } from '@nestjs/common';
-import { ErrorConst } from 'src/application/error.consts';
-import { AppValidationException } from 'src/application/exception/app.validation.execption';
+import { ErrorConst } from '../../application/error.consts';
+import { AppValidationException } from '../../application/exception/app.validation.execption';
 import { Description, Status, Title, Uuid } from '../type/value.object';
 
 /**
