@@ -6,7 +6,7 @@ import { TasksMapper } from './tasks.mapper';
 import { Description, Status, Title, Uuid } from '../type/value.object';
 
 /**
- * インメモリタスクリポジトリ実装クラス
+ * タスクリポジトリ実装クラス
  */
 @Injectable()
 export class DefaultTasksReposiory implements TasksRepository {
@@ -33,7 +33,7 @@ export class DefaultTasksReposiory implements TasksRepository {
         ),
     );
 
-    this.setTasksDedepulicated(tasks);
+    this.getTasksDedepulicated(tasks).forEach((t) => this.tasks.push(t));
 
     return tasks;
   }
@@ -68,15 +68,17 @@ export class DefaultTasksReposiory implements TasksRepository {
   }
 
   /**
-   * 重複なくタスクを登録する
+   * 重複ないタスクの配列を取得する
    * @param {Tasks[]} tasks
    */
-  private setTasksDedepulicated(tasks: Tasks[]) {
+  private getTasksDedepulicated(tasks: Tasks[]): Tasks[] {
+    const t: Tasks[] = [];
     for (const task of tasks) {
       const exist = this.tasks.some((it) => !it.id.equals(task.id));
       if (exist) {
-        this.tasks.push(task);
+        t.push(task);
       }
     }
+    return t;
   }
 }
