@@ -94,6 +94,22 @@ export class BasicUuid implements Uuid {
   }
 }
 
+export class MockUuid implements Uuid {
+  constructor(private readonly _value: string) {}
+  create(v?: string): MockUuid {
+    if (v) {
+      return new MockUuid(v);
+    }
+    return new MockUuid('0000000000');
+  }
+  get value(): string {
+    return this._value;
+  }
+  equals(uuid: Uuid): boolean {
+    return this._value === uuid.value;
+  }
+}
+
 /**
  * タイトル値オブジェクト
  */
@@ -139,5 +155,26 @@ export class Description extends ValueObject<Description> {
 
   get value(): string {
     return this._value;
+  }
+}
+
+/**
+ * 期限 値オブジェクト
+ */
+export class Deadline extends ValueObject<Deadline> {
+  typeDeadline: PreferNominal;
+  equals(t: Deadline): boolean {
+    return this._value === t.value;
+  }
+  constructor(private readonly _value: Date) {
+    super();
+  }
+  get value(): Date {
+    return this._value;
+  }
+  getNDaylater(duration: number): Deadline {
+    const _d = this._value;
+    _d.setDate(this._value.getDate() + duration);
+    return new Deadline(_d);
   }
 }
