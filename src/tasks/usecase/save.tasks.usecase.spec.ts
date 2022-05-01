@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CaptureTasks } from '../dto/create-tasks.interface';
 import { InMemoryTasksMapper } from '../infrastructure/inmemory.tasks.mapper';
 import { DefaultTasksReposiory } from '../infrastructure/default.tasks.repository';
-import { Deadline, MockUuid } from '../type/value.object';
+import { MockUuid } from '../type/value.object';
 import { SaveTasksUseCase } from './save.tasks.usecase';
 
 describe('SaveTasksUseCase', () => {
@@ -32,36 +32,25 @@ describe('SaveTasksUseCase', () => {
     saveTasksUseCase = moduleRefs.get<SaveTasksUseCase>('SaveTasksUseCase');
   });
 
-  it('can save and get a single task', async () => {
-    const deadline = new Deadline(new Date()).getNDaylater(7);
-    const req: CaptureTasks = {
-      title: 'テストタスク',
-      description: '',
-      deadline: deadline.value,
-    };
-
-    Object.defineProperty(InMemoryTasksMapper, 'taskRecords', {
-      value: [],
-    });
-    console.log(InMemoryTasksMapper);
-
-    const result = await saveTasksUseCase.execute(req);
-
-    console.log(result);
-  });
-
   it('can save a single task', async () => {
     jest.spyOn(MockUuid.prototype, 'create').mockImplementation(() => {
       return new MockUuid('1000000000');
     });
+    const deadline = new Date();
+    deadline.setDate(deadline.getDate() + 7);
     const req: CaptureTasks = {
       title: 'テストタスク',
       description: '',
-      deadline: new Date(),
+      deadline: deadline,
     };
 
     const result = await saveTasksUseCase.execute(req);
 
+    // タスクが一つ増えている
     expect(result.length).toBe(5);
+    // モックしたIDでタスクが増えている
+    const mocked = result.filter((r) => r.id.value === '1000000000')[0];
+    console.log(`登録されるはずのタスク =>`, mocked);
+    expect(mocked.id).not.toBeNull();
   });
 });
