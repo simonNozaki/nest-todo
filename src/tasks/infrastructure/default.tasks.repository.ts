@@ -28,15 +28,14 @@ export class DefaultTasksReposiory implements TasksRepository {
   async findAll(): Promise<Tasks[]> {
     const tasksRecords = await this.tasksMapper.findAll();
     // 永続化されたレコードからドメインオブジェクトに変換
-    const tasks: Tasks[] = tasksRecords.map(
-      (t) =>
-        new Tasks(
-          this.uuid.create(t.id),
-          new Title(t.title),
-          new Description(t.description),
-          new Status(t.status),
-          new Deadline(t.deadline),
-        ),
+    const tasks: Tasks[] = tasksRecords.map((t) =>
+      Tasks.add(
+        this.uuid.create(t.id),
+        new Title(t.title),
+        new Description(t.description),
+        new Status(t.status),
+        new Deadline(t.deadline),
+      ),
     );
 
     this.getTasksDedepulicated(tasks).forEach((t) => this.tasks.push(t));
