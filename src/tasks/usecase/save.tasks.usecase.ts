@@ -2,7 +2,13 @@ import { Inject, Injectable } from '@nestjs/common';
 import { CaptureTasks } from '../dto/create-tasks.interface';
 import { Tasks } from '../model/tasks';
 import { TasksRepository } from '../repository/tasks.repository';
-import { Description, Status, Title, Uuid } from '../type/value.object';
+import {
+  Deadline,
+  Description,
+  Status,
+  Title,
+  Uuid,
+} from '../type/value.object';
 
 /**
  * タスク登録ユースケースクラス
@@ -27,7 +33,7 @@ export class SaveTasksUseCase {
       new Title(req.title),
       new Description(req.description),
       new Status('UNPROCESSED'),
-      req.deadline,
+      new Deadline(req.deadline),
     );
 
     await this.tasksRepository.capture(tasks);

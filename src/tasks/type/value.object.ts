@@ -1,5 +1,5 @@
-import { ErrorConst } from 'src/application/error.consts';
-import { AppValidationException } from 'src/application/exception/app.validation.execption';
+import { ErrorConst } from '../../application/error.consts';
+import { AppValidationException } from '../../application/exception/app.validation.execption';
 import { v4 } from 'uuid';
 
 /**
@@ -77,7 +77,7 @@ export class BasicUuid implements Uuid {
   typeBasicUuid: PreferNominal;
   constructor(private readonly _value: string) {
     if (this._value === '') {
-      throw new AppValidationException(ErrorConst.E_VALIDATION_ID_BLANK.value);
+      throw new AppValidationException(ErrorConst.E_VALIDATION_ID_BLANK);
     }
   }
   get value(): string {
@@ -88,6 +88,22 @@ export class BasicUuid implements Uuid {
       return new BasicUuid(v);
     }
     return new BasicUuid(v4().toString());
+  }
+  equals(uuid: Uuid): boolean {
+    return this._value === uuid.value;
+  }
+}
+
+export class MockUuid implements Uuid {
+  constructor(private readonly _value: string) {}
+  create(v?: string): MockUuid {
+    if (v) {
+      return new MockUuid(v);
+    }
+    return new MockUuid('0000000000');
+  }
+  get value(): string {
+    return this._value;
   }
   equals(uuid: Uuid): boolean {
     return this._value === uuid.value;
@@ -106,7 +122,7 @@ export class Title extends ValueObject<Title> {
     super();
     if (this._title.length > 200 || this._title.length === 0) {
       throw new AppValidationException(
-        ErrorConst.E_VALIDATION_TITLE_INVALID_LENGTH.value,
+        ErrorConst.E_VALIDATION_TITLE_INVALID_LENGTH,
       );
     }
   }
@@ -128,7 +144,7 @@ export class Description extends ValueObject<Description> {
     super();
     if (this._value.length > 500) {
       throw new AppValidationException(
-        ErrorConst.E_VALIDATION_DESCRIPTION_INVALID_LENGTH.value,
+        ErrorConst.E_VALIDATION_DESCRIPTION_INVALID_LENGTH,
       );
     }
     // デフォルト値の設定
@@ -139,5 +155,26 @@ export class Description extends ValueObject<Description> {
 
   get value(): string {
     return this._value;
+  }
+}
+
+/**
+ * 期限 値オブジェクト
+ */
+export class Deadline extends ValueObject<Deadline> {
+  typeDeadline: PreferNominal;
+  equals(t: Deadline): boolean {
+    return this._value === t.value;
+  }
+  constructor(private readonly _value: Date) {
+    super();
+  }
+  get value(): Date {
+    return this._value;
+  }
+  getNDaylater(duration: number): Deadline {
+    const _d = this._value;
+    _d.setDate(this._value.getDate() + duration);
+    return new Deadline(_d);
   }
 }

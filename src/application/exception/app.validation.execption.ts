@@ -1,9 +1,11 @@
+import { ErrorConst } from '../error.consts';
+
 /**
  * アプリケーションバリデーション例外クラス
  */
 export class AppValidationException extends Error {
-  constructor(message?: string) {
+  constructor(error: ErrorConst) {
     super();
-    super.message = message;
+    super.message = error.value;
   }
 }
