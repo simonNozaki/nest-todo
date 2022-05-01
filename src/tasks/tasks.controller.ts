@@ -85,7 +85,7 @@ export class TasksController {
         title: t.title.title,
         description: t.description.value,
         status: t.status.convertToJp(),
-        deadline: t.deadline,
+        deadline: t.deadline.value,
       };
     });
   }

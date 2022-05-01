@@ -3,7 +3,13 @@ import { TasksRecord } from './tasks.record';
 import { Tasks } from '../model/tasks';
 import { TasksRepository } from '../repository/tasks.repository';
 import { TasksMapper } from './tasks.mapper';
-import { Description, Status, Title, Uuid } from '../type/value.object';
+import {
+  Deadline,
+  Description,
+  Status,
+  Title,
+  Uuid,
+} from '../type/value.object';
 
 /**
  * タスクリポジトリ実装クラス
@@ -29,7 +35,7 @@ export class DefaultTasksReposiory implements TasksRepository {
           new Title(t.title),
           new Description(t.description),
           new Status(t.status),
-          t.deadline,
+          new Deadline(t.deadline),
         ),
     );
 
@@ -53,7 +59,7 @@ export class DefaultTasksReposiory implements TasksRepository {
       title: tasks.title.title,
       description: tasks.description.value,
       status: tasks.status.value,
-      deadline: tasks.deadline,
+      deadline: tasks.deadline.value,
       createdAt: now,
       createdBy: '',
       updatedAt: now,
