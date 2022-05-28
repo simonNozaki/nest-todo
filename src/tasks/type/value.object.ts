@@ -172,9 +172,4 @@ export class Deadline extends ValueObject<Deadline> {
   get value(): Date {
     return this._value;
   }
-  getNDaylater(duration: number): Deadline {
-    const _d = this._value;
-    _d.setDate(this._value.getDate() + duration);
-    return new Deadline(_d);
-  }
 }
