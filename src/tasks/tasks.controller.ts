@@ -7,9 +7,9 @@ import {
 } from './dto/find-all-tasks.interface';
 import { SaveTasksUseCase } from './usecase/save.tasks.usecase';
 import { FindAllTasksUseCase } from './usecase/find.all.tasks.usecase';
-import { Resultt } from 'resultt';
 import { AppValidationException } from '../application/exception/app.validation.execption';
 import { ErrorConst } from '../application/error.consts';
+import { Resultt } from 'resultt';
 
 /**
  * タスクドメインコントローラクラス
@@ -30,22 +30,26 @@ export class TasksController {
   @Get()
   @Render('tasks')
   async findAll(): Promise<FindAllTasks> {
-    const errors: string[] = [];
-    let tasks: Tasks[] = [];
-    try {
-      tasks = await this.findAllTasksUseCase.execute();
-    } catch (e) {
-      if (e instanceof AppValidationException) {
-        errors.push(e.message);
-      } else {
-        errors.push(ErrorConst.E_SYSTEM_UNEXPECTED_ERROR.value);
-      }
-    }
-
-    return {
-      tasks: this.toFindAllTasksElement(tasks),
-      errors: errors,
-    };
+    return Resultt.runCatching(async () => {
+      const tasks = await this.findAllTasksUseCase.execute();
+      return {
+        tasks: this.toFindAllTasksElement(tasks),
+        errors: null,
+      };
+    })
+      .onSuccess(async (v) => {
+        console.log('検索結果: ', await v);
+      })
+      .onFailure((e) => {
+        console.error('検索処理中のエラー: ', e);
+      })
+      .getOrElse((e: Error) => {
+        const m =
+          e instanceof AppValidationException
+            ? e.error
+            : ErrorConst.E_SYSTEM_UNEXPECTED_ERROR;
+        return this.getErrorResponse([m]);
+      });
   }
 
   /**
@@ -56,26 +60,27 @@ export class TasksController {
   @Post()
   @Render('tasks')
   async capture(@Body() req: CaptureTasks): Promise<FindAllTasks> {
-    const errors: string[] = [];
-    let tasks: Tasks[] = [];
-    try {
-      tasks = await this.saveTasksUseCase.execute(req);
-    } catch (e) {
-      if (e instanceof AppValidationException) {
-        errors.push(e.message);
-      } else {
-        errors.push(ErrorConst.E_SYSTEM_UNEXPECTED_ERROR.value);
-      }
-    }
-
-    return {
-      tasks: this.toFindAllTasksElement(tasks),
-      errors: errors,
-    };
+    return Resultt.runCatching(async () => {
+      const tasks = await this.saveTasksUseCase.execute(req);
+      return {
+        tasks: this.toFindAllTasksElement(tasks),
+        errors: [],
+      };
+    })
+      .onSuccess(async (v) => {
+        console.log('登録成功: ', await v);
+      })
+      .getOrElse((e: Error) => {
+        const m =
+          e instanceof AppValidationException
+            ? e.error
+            : ErrorConst.E_SYSTEM_UNEXPECTED_ERROR;
+        return this.getErrorResponse([m]);
+      });
   }
 
   /**
-   * ドメインオブジェクトからUI描画オブジェクトに変換する
+   * ユースケースの結果をUI描画オブジェクトに変換する
    * @param {Tasks[]} tasks
    */
   private toFindAllTasksElement(tasks: Tasks[]): FindAllTasksElement[] {
@@ -88,5 +93,13 @@ export class TasksController {
         deadline: t.deadline.value,
       };
     });
+  }
+
+  private getErrorResponse(messages: ErrorConst[]): FindAllTasks {
+    const messageValues = messages.map((v) => v.value);
+    return {
+      tasks: [],
+      errors: messageValues,
+    };
   }
 }
