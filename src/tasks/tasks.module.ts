@@ -9,7 +9,7 @@ import { FindAllTasksUseCase } from './usecase/find.all.tasks.usecase';
 import { SaveTasksUseCase } from './usecase/save.tasks.usecase';
 
 const tasksMapper: Type<TasksMapper> =
-  process.env.STAGE === 'production' || 'staging'
+  process.env.STAGE === ('production' || 'staging')
     ? LocalMongoDbTasksMapper
     : InMemoryTasksMapper;
 
